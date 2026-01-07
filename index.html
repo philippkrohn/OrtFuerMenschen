@@ -1,645 +1,760 @@
-import React, { useState, useEffect } from 'react';
-import { Heart, Leaf, Briefcase, BarChart3, Users, ArrowRight, Play, TrendingUp, ShieldCheck, PieChart, FileText, Share2, MapPin, MonitorPlay, UserCheck, Quote, Smartphone, Building2, ScrollText, GraduationCap, Stethoscope, HandHeart } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Philipp Krohn - Strategie & Fundraising HSK</title>
+    
+    <!-- Tailwind CSS für das Styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React und ReactDOM (Core Libraries) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel für JSX Kompilierung im Browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Lucide Icons (Vanilla JS Version) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-// --- STYLES & THEME ---
-// HSK Corporate Identity Näherung
-// Rot/Weinrot: #8a1b3b (Primärfarbe)
-// Slate/Anthrazit: slate-900 (Text/Dark)
-// Hintergrund: slate-50
+    <!-- Custom Config für Tailwind (HSK Farben) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        hsk: {
+                            primary: '#8a1b3b', // HSK Rot
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
-const App = () => {
-    return (
-        <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-            <Header />
-            <Hero />
-            <Intro />
-            <DemoSection />
-            <About />
-            <Footer />
-        </div>
-    );
-};
+    <style>
+        /* Smooth Scrolling für Anker-Links */
+        html {
+            scroll-behavior: smooth;
+        }
+        /* Custom Animationen */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
 
-// 1. Header Component
-const Header = () => (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-slate-800 rounded-sm flex items-center justify-center text-white font-bold">PK</div>
-                <span className="text-xl font-bold text-slate-800 tracking-tight">Philipp Krohn</span>
-            </div>
-            <nav className="hidden md:flex space-x-8 text-sm font-medium text-slate-600">
-                <a href="#intro" className="hover:text-slate-900 transition">Strategie</a>
-                <a href="#demos" className="hover:text-slate-900 transition">Lösungskonzepte</a>
-                <a href="#about" className="hover:text-slate-900 transition">Profil</a>
-            </nav>
-            <a href="mailto:Philipp.Krohn@gmail.com" className="bg-slate-800 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-slate-700 transition">
-                Kontakt aufnehmen
-            </a>
-        </div>
-    </header>
-);
+    <!-- Hier wird die React App hineingeladen -->
+    <div id="root"></div>
 
-// 2. Hero Section with Video Placeholder
-const Hero = () => (
-    <section className="bg-gradient-to-b from-slate-50 to-white py-16 lg:py-24">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div className="space-y-6">
-                    {/* Updated to Download Button (Soft Blue) */}
-                    <a 
-                        href="Strategie-Dossier HSK.pdf" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 transition cursor-pointer border border-blue-200 group shadow-sm"
-                    >
-                        <FileText className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform"/>
-                        Download: Strategie-Dossier HSK (PDF)
+    <script type="text/babel">
+        // --- SETUP: React Hooks & Icons ---
+        const { useState, useEffect } = React;
+
+        // Hilfsfunktion, um Lucide Icons in React ohne Bundler zu nutzen
+        const Icon = ({ name, size = 24, className, ...props }) => {
+            const iconData = lucide.icons[name];
+            if (!iconData) return null;
+
+            return React.createElement('svg', {
+                xmlns: "http://www.w3.org/2000/svg",
+                width: size,
+                height: size,
+                viewBox: "0 0 24 24",
+                fill: "none",
+                stroke: "currentColor",
+                strokeWidth: 2,
+                strokeLinecap: "round",
+                strokeLinejoin: "round",
+                className: className,
+                ...props
+            }, iconData.map((child, index) => 
+                React.createElement(child[0], { key: index, ...child[1] })
+            ));
+        };
+
+        // Icon Mapping (React Component Name -> Lucide Icon Name)
+        // Lucide nutzt intern camelCase (z.B. barChart3), React nutzt PascalCase (BarChart3)
+        const Heart = (props) => <Icon name="heart" {...props} />;
+        const Leaf = (props) => <Icon name="leaf" {...props} />;
+        const Briefcase = (props) => <Icon name="briefcase" {...props} />;
+        const BarChart3 = (props) => <Icon name="barChart3" {...props} />;
+        const Users = (props) => <Icon name="users" {...props} />;
+        const ArrowRight = (props) => <Icon name="arrowRight" {...props} />;
+        const Play = (props) => <Icon name="play" {...props} />;
+        const TrendingUp = (props) => <Icon name="trendingUp" {...props} />;
+        const ShieldCheck = (props) => <Icon name="shieldCheck" {...props} />;
+        const PieChart = (props) => <Icon name="pieChart" {...props} />;
+        const FileText = (props) => <Icon name="fileText" {...props} />;
+        const Share2 = (props) => <Icon name="share2" {...props} />;
+        const MapPin = (props) => <Icon name="mapPin" {...props} />;
+        const MonitorPlay = (props) => <Icon name="monitorPlay" {...props} />;
+        const UserCheck = (props) => <Icon name="userCheck" {...props} />;
+        const Quote = (props) => <Icon name="quote" {...props} />;
+        const Smartphone = (props) => <Icon name="smartphone" {...props} />;
+        const Building2 = (props) => <Icon name="building2" {...props} />;
+        const ScrollText = (props) => <Icon name="scrollText" {...props} />;
+        const GraduationCap = (props) => <Icon name="graduationCap" {...props} />;
+        const Stethoscope = (props) => <Icon name="stethoscope" {...props} />;
+        const HandHeart = (props) => <Icon name="heartHandshake" {...props} />; // 'HandHeart' oft als 'heartHandshake' in Lucide
+
+        // --- HAUPTAPP ---
+
+        const App = () => {
+            return (
+                <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+                    <Header />
+                    <Hero />
+                    <Intro />
+                    <DemoSection />
+                    <About />
+                    <Footer />
+                </div>
+            );
+        };
+
+        // 1. Header Component
+        const Header = () => (
+            <header className="bg-white shadow-sm sticky top-0 z-50">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                    <div className="flex items-center space-x-2">
+                        <div className="w-8 h-8 bg-slate-800 rounded-sm flex items-center justify-center text-white font-bold">PK</div>
+                        <span className="text-xl font-bold text-slate-800 tracking-tight">Philipp Krohn</span>
+                    </div>
+                    <nav className="hidden md:flex space-x-8 text-sm font-medium text-slate-600">
+                        <a href="#intro" className="hover:text-slate-900 transition">Strategie</a>
+                        <a href="#demos" className="hover:text-slate-900 transition">Lösungskonzepte</a>
+                        <a href="#about" className="hover:text-slate-900 transition">Profil</a>
+                    </nav>
+                    <a href="mailto:Philipp.Krohn@gmail.com" className="bg-slate-800 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-slate-700 transition">
+                        Kontakt aufnehmen
                     </a>
-                    
-                    <h1 className="text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight">
-                        Fundraising neu denken: <br/>
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-700 to-slate-500">
-                            Analytisch. Digital. Menschlich.
-                        </span>
-                    </h1>
-                    <p className="text-lg text-slate-600 max-w-lg">
-                        Wie wir die medizinische Exzellenz der Heinrich Sengelmann Kliniken durch moderne, datengetriebene Fundraising-Strategien nachhaltig sichern. Ein Konzeptentwurf für die Position "Mitarbeiter*in Marketing & Fundraising".
+                </div>
+            </header>
+        );
+
+        // 2. Hero Section
+        const Hero = () => (
+            <section className="bg-gradient-to-b from-slate-50 to-white py-16 lg:py-24">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <div className="space-y-6">
+                            {/* Download Button */}
+                            <a 
+                                href="Strategie-Dossier HSK.pdf" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 transition cursor-pointer border border-blue-200 group shadow-sm"
+                            >
+                                <FileText className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform"/>
+                                Download: Strategie-Dossier HSK (PDF)
+                            </a>
+                            
+                            <h1 className="text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight">
+                                Fundraising neu denken: <br/>
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-700 to-slate-500">
+                                    Analytisch. Digital. Menschlich.
+                                </span>
+                            </h1>
+                            <p className="text-lg text-slate-600 max-w-lg">
+                                Wie wir die medizinische Exzellenz der Heinrich Sengelmann Kliniken durch moderne, datengetriebene Fundraising-Strategien nachhaltig sichern. Ein Konzeptentwurf für die Position "Mitarbeiter*in Marketing & Fundraising".
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                                <a href="#demos" className="inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-slate-800 hover:bg-slate-700 md:text-lg transition shadow-lg">
+                                    Zu den Konzepten <ArrowRight className="ml-2 w-4 h-4" />
+                                </a>
+                                <a href="#about" className="inline-flex justify-center items-center px-6 py-3 border border-slate-300 text-base font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 md:text-lg transition">
+                                    Über Philipp Krohn
+                                </a>
+                            </div>
+                        </div>
+                        
+                        {/* Video Placeholder Container */}
+                        <div className="relative group rounded-xl overflow-hidden shadow-2xl border-4 border-white bg-slate-900 aspect-video">
+                            <iframe 
+                                className="w-full h-full object-cover"
+                                src="https://www.youtube.com/embed/97QLcxtIug8" 
+                                title="Vorstellung Philipp Krohn" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowFullScreen>
+                            </iframe>
+                            <div className="absolute -bottom-4 -right-4 bg-white p-4 rounded-tl-xl shadow-lg hidden md:block">
+                                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Video-Pitch</p>
+                                <p className="text-sm font-semibold text-slate-800">Vision & Motivation</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        );
+
+        // 3. Intro / Strategic Context
+        const Intro = () => (
+            <section id="intro" className="py-16 bg-white border-b border-slate-100">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+                    <h2 className="text-3xl font-bold text-slate-900 mb-6">Status Quo trifft Zukunftsvision</h2>
+                    <p className="text-lg text-slate-600 mb-12 leading-relaxed">
+                        Die Heinrich Sengelmann Kliniken stehen an einem Transformationspunkt. Als Akademisches Lehrkrankenhaus und mit dem Ausbau der Gerontopsychiatrie wächst der Bedarf an „Exzellenzfinanzierung“. 
+                        Meine These: <strong>Fundraising und Recruiting nutzen dieselbe Währung – Vertrauen.</strong> Ich übertrage Methoden aus dem Performance-Recruiting auf die Spendergewinnung, um die Trends 2026/2027 für die HSK nutzbar zu machen:
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                        <a href="#demos" className="inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-slate-800 hover:bg-slate-700 md:text-lg transition shadow-lg">
-                            Zu den Konzepten <ArrowRight className="ml-2 w-4 h-4" />
-                        </a>
-                        <a href="#about" className="inline-flex justify-center items-center px-6 py-3 border border-slate-300 text-base font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 md:text-lg transition">
-                            Über Philipp Krohn
-                        </a>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left max-w-4xl mx-auto">
+                        <div className="p-6 bg-slate-50 rounded-lg border border-slate-100 flex items-start space-x-4 hover:shadow-md transition">
+                            <div className="bg-blue-100 p-3 rounded-full text-blue-600">
+                                <Smartphone className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-slate-800 mb-1">Microphilanthropy</h4>
+                                <p className="text-sm text-slate-600">Niedrigschwellige Kleinstspenden über digitale Kanäle.</p>
+                            </div>
+                        </div>
+                        <div className="p-6 bg-slate-50 rounded-lg border border-slate-100 flex items-start space-x-4 hover:shadow-md transition">
+                            <div className="bg-purple-100 p-3 rounded-full text-purple-600">
+                                <Building2 className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-slate-800 mb-1">Corporate Partnerships</h4>
+                                <p className="text-sm text-slate-600">Strategische Kooperationen mit Unternehmen (z.B. via BGM).</p>
+                            </div>
+                        </div>
+                        <div className="p-6 bg-slate-50 rounded-lg border border-slate-100 flex items-start space-x-4 hover:shadow-md transition">
+                            <div className="bg-amber-100 p-3 rounded-full text-amber-600">
+                                <ScrollText className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-slate-800 mb-1">Legacy Giving</h4>
+                                <p className="text-sm text-slate-600">Testamentsspenden und Nachlass-Marketing.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                {/* Video Placeholder Container */}
-                <div className="relative group rounded-xl overflow-hidden shadow-2xl border-4 border-white bg-slate-900 aspect-video">
-                    <iframe 
-                        className="w-full h-full object-cover"
-                        src="https://www.youtube.com/embed/97QLcxtIug8" 
-                        title="Vorstellung Philipp Krohn" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowFullScreen>
-                    </iframe>
-                    <div className="absolute -bottom-4 -right-4 bg-white p-4 rounded-tl-xl shadow-lg hidden md:block">
-                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Video-Pitch</p>
-                        <p className="text-sm font-semibold text-slate-800">Vision & Motivation</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-);
+            </section>
+        );
 
-// 3. Intro / Strategic Context
-const Intro = () => (
-    <section id="intro" className="py-16 bg-white border-b border-slate-100">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-            <h2 className="text-3xl font-bold text-slate-900 mb-6">Status Quo trifft Zukunftsvision</h2>
-            <p className="text-lg text-slate-600 mb-12 leading-relaxed">
-                Die Heinrich Sengelmann Kliniken stehen an einem Transformationspunkt. Als Akademisches Lehrkrankenhaus und mit dem Ausbau der Gerontopsychiatrie wächst der Bedarf an „Exzellenzfinanzierung“. 
-                Meine These: <strong>Fundraising und Recruiting nutzen dieselbe Währung – Vertrauen.</strong> Ich übertrage Methoden aus dem Performance-Recruiting auf die Spendergewinnung, um die Trends 2026/2027 für die HSK nutzbar zu machen:
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left max-w-4xl mx-auto">
-                <div className="p-6 bg-slate-50 rounded-lg border border-slate-100 flex items-start space-x-4 hover:shadow-md transition">
-                    <div className="bg-blue-100 p-3 rounded-full text-blue-600">
-                        <Smartphone className="w-6 h-6" />
-                    </div>
-                    <div>
-                        <h4 className="font-bold text-slate-800 mb-1">Microphilanthropy</h4>
-                        <p className="text-sm text-slate-600">Niedrigschwellige Kleinstspenden über digitale Kanäle.</p>
-                    </div>
-                </div>
-                <div className="p-6 bg-slate-50 rounded-lg border border-slate-100 flex items-start space-x-4 hover:shadow-md transition">
-                    <div className="bg-purple-100 p-3 rounded-full text-purple-600">
-                        <Building2 className="w-6 h-6" />
-                    </div>
-                    <div>
-                        <h4 className="font-bold text-slate-800 mb-1">Corporate Partnerships</h4>
-                        <p className="text-sm text-slate-600">Strategische Kooperationen mit Unternehmen (z.B. via BGM).</p>
-                    </div>
-                </div>
-                <div className="p-6 bg-slate-50 rounded-lg border border-slate-100 flex items-start space-x-4 hover:shadow-md transition">
-                    <div className="bg-amber-100 p-3 rounded-full text-amber-600">
-                        <ScrollText className="w-6 h-6" />
-                    </div>
-                    <div>
-                        <h4 className="font-bold text-slate-800 mb-1">Legacy Giving</h4>
-                        <p className="text-sm text-slate-600">Testamentsspenden und Nachlass-Marketing.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-);
+        // --- INTERACTIVE DEMOS ---
 
-// --- INTERACTIVE DEMOS (The Core) ---
+        // Demo 1: Digital Microphilanthropy
+        const MicroDonationDemo = () => {
+            const goal = 1500;
+            const [currentAmount, setCurrentAmount] = useState(850);
+            const [animation, setAnimation] = useState(false);
 
-// Demo 1: Digital Microphilanthropy
-const MicroDonationDemo = () => {
-    // State to simulate a "campaign"
-    const goal = 1500;
-    const [currentAmount, setCurrentAmount] = useState(850);
-    const [animation, setAnimation] = useState(false);
+            const progress = Math.min((currentAmount / goal) * 100, 100);
 
-    const progress = Math.min((currentAmount / goal) * 100, 100);
+            const handleDonate = (amount) => {
+                setCurrentAmount(prev => prev + amount);
+                setAnimation(true);
+                setTimeout(() => setAnimation(false), 800);
+            };
 
-    const handleDonate = (amount) => {
-        setCurrentAmount(prev => prev + amount);
-        setAnimation(true);
-        setTimeout(() => setAnimation(false), 800);
-    };
-
-    return (
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200 flex flex-col h-full hover:border-[#8a1b3b]/30 transition duration-300">
-            <div className="p-6 bg-slate-50 border-b border-slate-100">
-                <div className="flex items-center space-x-2 mb-2">
-                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded">Trend: Microphilanthropy</span>
-                </div>
-                <h3 className="text-xl font-bold text-slate-900">Donor Experience (Mobile)</h3>
-                <p className="text-sm text-slate-500 mt-1">Ausgespielt via Social Media (Instagram/TikTok) & QR-Codes vor Ort.</p>
-            </div>
-            
-            <div className="p-6 flex-grow flex flex-col items-center justify-center bg-slate-50/50">
-                {/* Mobile Screen Simulation */}
-                <div className="w-64 bg-white border border-slate-200 rounded-3xl shadow-xl overflow-hidden relative">
-                    <div className="h-24 bg-teal-600 flex items-center justify-center text-white relative">
-                        <Leaf className="w-10 h-10 opacity-80" />
-                        <div className="absolute bottom-0 w-full h-8 bg-gradient-to-t from-black/20 to-transparent"></div>
+            return (
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200 flex flex-col h-full hover:border-[#8a1b3b]/30 transition duration-300">
+                    <div className="p-6 bg-slate-50 border-b border-slate-100">
+                        <div className="flex items-center space-x-2 mb-2">
+                            <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded">Trend: Microphilanthropy</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-slate-900">Donor Experience (Mobile)</h3>
+                        <p className="text-sm text-slate-500 mt-1">Ausgespielt via Social Media (Instagram/TikTok) & QR-Codes vor Ort.</p>
                     </div>
                     
-                    <div className="p-4">
-                        <h4 className="font-bold text-slate-800 text-sm leading-tight mb-1">Eine Bank für den Sinnesgarten</h4>
-                        <p className="text-[10px] text-slate-500 mb-3">Helfen Sie Patienten, Ruhe zu finden.</p>
-                        
-                        <div className="w-full bg-slate-100 rounded-full h-2 mb-1">
-                            <div 
-                                className="bg-teal-500 h-2 rounded-full transition-all duration-700 ease-out" 
-                                style={{ width: `${progress}%` }}
-                            ></div>
-                        </div>
-                        <div className="flex justify-between text-[10px] text-slate-400 mb-4">
-                            <span>{currentAmount}€ gesammelt</span>
-                            <span>Ziel: {goal}€</span>
-                        </div>
+                    <div className="p-6 flex-grow flex flex-col items-center justify-center bg-slate-50/50">
+                        {/* Mobile Screen Simulation */}
+                        <div className="w-64 bg-white border border-slate-200 rounded-3xl shadow-xl overflow-hidden relative">
+                            <div className="h-24 bg-teal-600 flex items-center justify-center text-white relative">
+                                <Leaf className="w-10 h-10 opacity-80" />
+                                <div className="absolute bottom-0 w-full h-8 bg-gradient-to-t from-black/20 to-transparent"></div>
+                            </div>
+                            
+                            <div className="p-4">
+                                <h4 className="font-bold text-slate-800 text-sm leading-tight mb-1">Eine Bank für den Sinnesgarten</h4>
+                                <p className="text-[10px] text-slate-500 mb-3">Helfen Sie Patienten, Ruhe zu finden.</p>
+                                
+                                <div className="w-full bg-slate-100 rounded-full h-2 mb-1">
+                                    <div 
+                                        className="bg-teal-500 h-2 rounded-full transition-all duration-700 ease-out" 
+                                        style={{ width: `${progress}%` }}
+                                    ></div>
+                                </div>
+                                <div className="flex justify-between text-[10px] text-slate-400 mb-4">
+                                    <span>{currentAmount}€ gesammelt</span>
+                                    <span>Ziel: {goal}€</span>
+                                </div>
 
-                        <div className="space-y-2">
-                            <button 
-                                onClick={() => handleDonate(15)}
-                                className="w-full py-2 px-3 border border-teal-100 bg-teal-50 hover:bg-teal-100 rounded-lg flex items-center justify-between transition group"
-                            >
-                                <div className="flex items-center">
-                                    <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center mr-2 text-teal-600 shadow-sm">🌱</div>
-                                    <span className="text-xs font-medium text-teal-800">Setzling spenden</span>
+                                <div className="space-y-2">
+                                    <button 
+                                        onClick={() => handleDonate(15)}
+                                        className="w-full py-2 px-3 border border-teal-100 bg-teal-50 hover:bg-teal-100 rounded-lg flex items-center justify-between transition group"
+                                    >
+                                        <div className="flex items-center">
+                                            <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center mr-2 text-teal-600 shadow-sm">🌱</div>
+                                            <span className="text-xs font-medium text-teal-800">Setzling spenden</span>
+                                        </div>
+                                        <span className="text-xs font-bold text-teal-600">15€</span>
+                                    </button>
+                                    <button 
+                                        onClick={() => handleDonate(50)}
+                                        className="w-full py-2 px-3 border border-teal-100 bg-teal-50 hover:bg-teal-100 rounded-lg flex items-center justify-between transition"
+                                    >
+                                        <div className="flex items-center">
+                                            <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center mr-2 text-teal-600 shadow-sm">🪵</div>
+                                            <span className="text-xs font-medium text-teal-800">Holzlatte spenden</span>
+                                        </div>
+                                        <span className="text-xs font-bold text-teal-600">50€</span>
+                                    </button>
                                 </div>
-                                <span className="text-xs font-bold text-teal-600">15€</span>
-                            </button>
-                            <button 
-                                onClick={() => handleDonate(50)}
-                                className="w-full py-2 px-3 border border-teal-100 bg-teal-50 hover:bg-teal-100 rounded-lg flex items-center justify-between transition"
-                            >
-                                <div className="flex items-center">
-                                    <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center mr-2 text-teal-600 shadow-sm">🪵</div>
-                                    <span className="text-xs font-medium text-teal-800">Holzlatte spenden</span>
+                            </div>
+
+                            {animation && (
+                                <div className="absolute inset-0 bg-teal-600/90 flex flex-col items-center justify-center text-white animate-fade-in z-20">
+                                    <Heart className="w-12 h-12 mb-2 animate-bounce fill-current" />
+                                    <span className="font-bold text-lg">Danke!</span>
+                                    <span className="text-xs opacity-90">Du bist ein Garten-Held.</span>
                                 </div>
-                                <span className="text-xs font-bold text-teal-600">50€</span>
-                            </button>
+                            )}
                         </div>
                     </div>
 
-                    {animation && (
-                        <div className="absolute inset-0 bg-teal-600/90 flex flex-col items-center justify-center text-white animate-fade-in z-20">
-                            <Heart className="w-12 h-12 mb-2 animate-bounce fill-current" />
-                            <span className="font-bold text-lg">Danke!</span>
-                            <span className="text-xs opacity-90">Du bist ein Garten-Held.</span>
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            <div className="p-4 bg-slate-50 text-xs text-slate-500 border-t border-slate-100">
-                <strong>Methodik:</strong> Verbreitung über Social Ads & Newsletter. Sofortiges visuelles Feedback ("Belohnung") senkt die Hürde für Erstspender drastisch.
-            </div>
-        </div>
-    );
-};
-
-// Demo 2: Corporate Partnership
-const CorporateDemo = () => {
-    const [employees, setEmployees] = useState(50);
-    const [packageTier, setPackageTier] = useState("Standard");
-
-    useEffect(() => {
-        if (employees < 20) setPackageTier("Basis");
-        else if (employees < 100) setPackageTier("Standard");
-        else setPackageTier("Premium");
-    }, [employees]);
-
-    const donationValue = employees * 25; // Simple heuristic
-
-    return (
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200 flex flex-col h-full hover:border-[#8a1b3b]/30 transition duration-300">
-            <div className="p-6 bg-slate-50 border-b border-slate-100">
-                 <div className="flex items-center space-x-2 mb-2">
-                    <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs font-bold rounded">Trend: Corporate Partnerships</span>
-                </div>
-                <h3 className="text-xl font-bold text-slate-900">BGM-Kooperations-Modell</h3>
-                <p className="text-sm text-slate-500 mt-1">Partnerschaft auf Augenhöhe: Unternehmen engagieren sich, HSK gibt Wissen zurück.</p>
-            </div>
-
-            <div className="p-6 flex-grow">
-                <label className="block text-sm font-medium text-slate-700 mb-2">Anzahl Mitarbeitende im Unternehmen</label>
-                <input 
-                    type="range" 
-                    min="10" 
-                    max="500" 
-                    value={employees} 
-                    onChange={(e) => setEmployees(e.target.value)}
-                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-800 mb-6"
-                />
-                <div className="text-center font-bold text-3xl text-slate-800 mb-6">{employees} MA</div>
-
-                <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 mb-4">
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-slate-500">Vorschlag Spendenhöhe (p.a.):</span>
-                        <span className="font-bold text-green-600">~{donationValue} €</span>
+                    <div className="p-4 bg-slate-50 text-xs text-slate-500 border-t border-slate-100">
+                        <strong>Methodik:</strong> Verbreitung über Social Ads & Newsletter. Sofortiges visuelles Feedback ("Belohnung") senkt die Hürde für Erstspender drastisch.
                     </div>
-                    <ul className="text-sm space-y-2 text-slate-600">
-                        <li className="flex items-center"><ShieldCheck className="w-4 h-4 mr-2 text-green-500"/> Steuerlich absetzbare Spende</li>
-                        <li className="flex items-center font-semibold text-slate-800"><HandHeart className="w-4 h-4 mr-2 text-green-500"/> 
-                            Freiwillige Geste: Workshop "Resilienz" (Digital oder vor Ort)
-                        </li>
-                        <li className="flex items-center text-purple-700">
-                            <MonitorPlay className="w-4 h-4 mr-2 text-purple-500"/> 
-                            Möglicher Zugriff auf Experten-Wissen (Videos)
-                        </li>
-                    </ul>
                 </div>
-                
-                <div className="text-xs bg-blue-50 text-blue-800 p-3 rounded border border-blue-100">
-                    <strong>Der Ansatz:</strong> Keine "gekaufte Leistung" (Compliance). Wir teilen unser Expertenwissen (flexibel digital/vor Ort) als Zeichen der Verbundenheit, nicht als Gegenleistung für die Spende.
-                </div>
-            </div>
+            );
+        };
 
-             <div className="p-4 bg-slate-50 text-xs text-slate-500 border-t border-slate-100">
-                <strong>Methodik:</strong> Win-Win-Situation. Unternehmen in Stormarn suchen BGM-Lösungen. Wir stärken die Bindung durch Wissenstransfer.
-            </div>
-        </div>
-    );
-};
+        // Demo 2: Corporate Partnership
+        const CorporateDemo = () => {
+            const [employees, setEmployees] = useState(50);
+            const [packageTier, setPackageTier] = useState("Standard");
 
-// Demo 3: Netzwerkarbeit (Interactive & Expanded)
-const NetworkDemo = () => {
-    const [selectedNode, setSelectedNode] = useState(null);
+            useEffect(() => {
+                if (employees < 20) setPackageTier("Basis");
+                else if (employees < 100) setPackageTier("Standard");
+                else setPackageTier("Premium");
+            }, [employees]);
 
-    const nodes = [
-        { 
-            id: 'esa', 
-            label: 'ESA Holding', 
-            icon: <Share2 className="w-5 h-5"/>, 
-            color: 'indigo', 
-            contacts: [
-                { name: 'Marion F.', role: 'Leitung Fundraising ESA' },
-                { name: 'Dr. T.', role: 'Finanzen' },
-                { name: 'Pastor M.', role: 'Vorstand' }
-            ], 
-            goal: 'Synergien bei Großspendern nutzen.' 
-        },
-        { 
-            id: 'politics', 
-            label: 'Politik Stormarn', 
-            icon: <MapPin className="w-5 h-5"/>, 
-            color: 'emerald', 
-            contacts: [
-                { name: 'Landrat Dr. G.', role: 'Kreis Stormarn' },
-                { name: 'Frau K.', role: 'Sozialausschuss' },
-                { name: 'Herr B.', role: 'Bürgermeister' }
-            ], 
-            goal: 'Öffentliche Mittel sichern.' 
-        },
-        { 
-            id: 'referrers', 
-            label: 'Med. Zuweiser', 
-            icon: <Stethoscope className="w-5 h-5"/>, 
-            color: 'blue', 
-            contacts: [
-                { name: 'Dr. K.', role: 'Niedergelassen' },
-                { name: 'MVZ Stormarn', role: 'Leitung' },
-                { name: 'Sozialdienst', role: 'UKE Hamburg' }
-            ], 
-            goal: 'Vertrauen durch Fachexpertise.' 
-        },
-        { 
-            id: 'press', 
-            label: 'Presse', 
-            icon: <Briefcase className="w-5 h-5"/>, 
-            color: 'amber', 
-            contacts: [
-                { name: 'Lokalredaktion', role: 'Stormarner Tageblatt' },
-                { name: 'Redaktion', role: 'Hamburger Abendblatt' },
-                { name: 'NDR', role: 'Gesundheitsredaktion' }
-            ], 
-            goal: '"Good News"-Stories platzieren.' 
-        },
-        { 
-            id: 'uni', 
-            label: 'UKE / Forschung', 
-            icon: <GraduationCap className="w-5 h-5"/>, 
-            color: 'teal', 
-            contacts: [
-                { name: 'Prof. L.', role: 'Lehrstuhl Psychiatrie' },
-                { name: 'Dekanat', role: 'Forschung & Lehre' },
-                { name: 'Studentenschaft', role: 'PJ-Vertreter' }
-            ], 
-            goal: 'Drittmittel für Projekte.' 
-        },
-        { 
-            id: 'family', 
-            label: 'Angehörige', 
-            icon: <Users className="w-5 h-5"/>, 
-            color: 'rose', 
-            contacts: [
-                { name: 'Beirat', role: 'Angehörigenvertretung' },
-                { name: 'Selbsthilfe', role: 'Demenz Stormarn' },
-                { name: 'Förderverein', role: 'Vorstand' }
-            ], 
-            goal: 'Botschafter für "Gute Behandlung".' 
-        },
-        { 
-            id: 'economy', 
-            label: 'Wirtschaft', 
-            icon: <Building2 className="w-5 h-5"/>, 
-            color: 'slate', 
-            contacts: [
-                { name: 'Handelskammer', role: 'Regionalbüro' },
-                { name: 'Rotary Club', role: 'Stormarn' },
-                { name: 'Unternehmerverband', role: 'Südholstein' }
-            ], 
-            goal: 'Lokale Sponsoren gewinnen.' 
-        },
-    ];
+            const donationValue = employees * 25; 
 
-    return (
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200 flex flex-col h-full hover:border-[#8a1b3b]/30 transition duration-300">
-            <div className="p-6 bg-slate-50 border-b border-slate-100">
-                <div className="flex items-center space-x-2 mb-2">
-                    <span className="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs font-bold rounded">Basis: Netzwerkarbeit</span>
-                </div>
-                <h3 className="text-xl font-bold text-slate-900">Erweitertes Stakeholder-Radar</h3>
-                <p className="text-sm text-slate-500 mt-1">Ein diverses Netzwerk ist der Schlüssel. Klicken Sie auf die Knoten.</p>
-            </div>
-            
-            <div className="p-6 flex-grow flex flex-col justify-center items-center relative min-h-[300px]">
-                {/* Info Card Overlay (if selected) */}
-                {selectedNode && (
-                    <div className="absolute inset-x-4 top-0 z-20 bg-white/95 backdrop-blur shadow-lg rounded-lg p-4 border border-indigo-100 animate-fade-in">
-                        <div className="flex justify-between items-start mb-2">
-                            <h4 className="font-bold text-indigo-900 text-sm">{selectedNode.label}</h4>
-                            <button onClick={() => setSelectedNode(null)} className="text-slate-400 hover:text-slate-600">×</button>
+            return (
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200 flex flex-col h-full hover:border-[#8a1b3b]/30 transition duration-300">
+                    <div className="p-6 bg-slate-50 border-b border-slate-100">
+                        <div className="flex items-center space-x-2 mb-2">
+                            <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs font-bold rounded">Trend: Corporate Partnerships</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-slate-900">BGM-Kooperations-Modell</h3>
+                        <p className="text-sm text-slate-500 mt-1">Partnerschaft auf Augenhöhe: Unternehmen engagieren sich, HSK gibt Wissen zurück.</p>
+                    </div>
+
+                    <div className="p-6 flex-grow">
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Anzahl Mitarbeitende im Unternehmen</label>
+                        <input 
+                            type="range" 
+                            min="10" 
+                            max="500" 
+                            value={employees} 
+                            onChange={(e) => setEmployees(e.target.value)}
+                            className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-800 mb-6"
+                        />
+                        <div className="text-center font-bold text-3xl text-slate-800 mb-6">{employees} MA</div>
+
+                        <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 mb-4">
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="text-sm text-slate-500">Vorschlag Spendenhöhe (p.a.):</span>
+                                <span className="font-bold text-green-600">~{donationValue} €</span>
+                            </div>
+                            <ul className="text-sm space-y-2 text-slate-600">
+                                <li className="flex items-center"><ShieldCheck className="w-4 h-4 mr-2 text-green-500"/> Steuerlich absetzbare Spende</li>
+                                <li className="flex items-center font-semibold text-slate-800"><HandHeart className="w-4 h-4 mr-2 text-green-500"/> 
+                                    Freiwillige Geste: Workshop "Resilienz" (Digital oder vor Ort)
+                                </li>
+                                <li className="flex items-center text-purple-700">
+                                    <MonitorPlay className="w-4 h-4 mr-2 text-purple-500"/> 
+                                    Möglicher Zugriff auf Experten-Wissen (Videos)
+                                </li>
+                            </ul>
                         </div>
                         
-                        <div className="space-y-1 mb-2">
-                            {selectedNode.contacts.map((contact, idx) => (
-                                <div key={idx} className="flex items-center text-xs text-slate-700">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 mr-2"></div>
-                                    <span className="font-semibold mr-1">{contact.name}</span>
-                                    <span className="text-slate-500 truncate">({contact.role})</span>
+                        <div className="text-xs bg-blue-50 text-blue-800 p-3 rounded border border-blue-100">
+                            <strong>Der Ansatz:</strong> Keine "gekaufte Leistung" (Compliance). Wir teilen unser Expertenwissen (flexibel digital/vor Ort) als Zeichen der Verbundenheit, nicht als Gegenleistung für die Spende.
+                        </div>
+                    </div>
+
+                    <div className="p-4 bg-slate-50 text-xs text-slate-500 border-t border-slate-100">
+                        <strong>Methodik:</strong> Win-Win-Situation. Unternehmen in Stormarn suchen BGM-Lösungen. Wir stärken die Bindung durch Wissenstransfer.
+                    </div>
+                </div>
+            );
+        };
+
+        // Demo 3: Netzwerkarbeit
+        const NetworkDemo = () => {
+            const [selectedNode, setSelectedNode] = useState(null);
+
+            const nodes = [
+                { 
+                    id: 'esa', 
+                    label: 'ESA Holding', 
+                    icon: <Share2 className="w-5 h-5"/>, 
+                    color: 'indigo', 
+                    contacts: [
+                        { name: 'Marion F.', role: 'Leitung Fundraising ESA' },
+                        { name: 'Dr. T.', role: 'Finanzen' },
+                        { name: 'Pastor M.', role: 'Vorstand' }
+                    ], 
+                    goal: 'Synergien bei Großspendern nutzen.' 
+                },
+                { 
+                    id: 'politics', 
+                    label: 'Politik Stormarn', 
+                    icon: <MapPin className="w-5 h-5"/>, 
+                    color: 'emerald', 
+                    contacts: [
+                        { name: 'Landrat Dr. G.', role: 'Kreis Stormarn' },
+                        { name: 'Frau K.', role: 'Sozialausschuss' },
+                        { name: 'Herr B.', role: 'Bürgermeister' }
+                    ], 
+                    goal: 'Öffentliche Mittel sichern.' 
+                },
+                { 
+                    id: 'referrers', 
+                    label: 'Med. Zuweiser', 
+                    icon: <Stethoscope className="w-5 h-5"/>, 
+                    color: 'blue', 
+                    contacts: [
+                        { name: 'Dr. K.', role: 'Niedergelassen' },
+                        { name: 'MVZ Stormarn', role: 'Leitung' },
+                        { name: 'Sozialdienst', role: 'UKE Hamburg' }
+                    ], 
+                    goal: 'Vertrauen durch Fachexpertise.' 
+                },
+                { 
+                    id: 'press', 
+                    label: 'Presse', 
+                    icon: <Briefcase className="w-5 h-5"/>, 
+                    color: 'amber', 
+                    contacts: [
+                        { name: 'Lokalredaktion', role: 'Stormarner Tageblatt' },
+                        { name: 'Redaktion', role: 'Hamburger Abendblatt' },
+                        { name: 'NDR', role: 'Gesundheitsredaktion' }
+                    ], 
+                    goal: '"Good News"-Stories platzieren.' 
+                },
+                { 
+                    id: 'uni', 
+                    label: 'UKE / Forschung', 
+                    icon: <GraduationCap className="w-5 h-5"/>, 
+                    color: 'teal', 
+                    contacts: [
+                        { name: 'Prof. L.', role: 'Lehrstuhl Psychiatrie' },
+                        { name: 'Dekanat', role: 'Forschung & Lehre' },
+                        { name: 'Studentenschaft', role: 'PJ-Vertreter' }
+                    ], 
+                    goal: 'Drittmittel für Projekte.' 
+                },
+                { 
+                    id: 'family', 
+                    label: 'Angehörige', 
+                    icon: <Users className="w-5 h-5"/>, 
+                    color: 'rose', 
+                    contacts: [
+                        { name: 'Beirat', role: 'Angehörigenvertretung' },
+                        { name: 'Selbsthilfe', role: 'Demenz Stormarn' },
+                        { name: 'Förderverein', role: 'Vorstand' }
+                    ], 
+                    goal: 'Botschafter für "Gute Behandlung".' 
+                },
+                { 
+                    id: 'economy', 
+                    label: 'Wirtschaft', 
+                    icon: <Building2 className="w-5 h-5"/>, 
+                    color: 'slate', 
+                    contacts: [
+                        { name: 'Handelskammer', role: 'Regionalbüro' },
+                        { name: 'Rotary Club', role: 'Stormarn' },
+                        { name: 'Unternehmerverband', role: 'Südholstein' }
+                    ], 
+                    goal: 'Lokale Sponsoren gewinnen.' 
+                },
+            ];
+
+            return (
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200 flex flex-col h-full hover:border-[#8a1b3b]/30 transition duration-300">
+                    <div className="p-6 bg-slate-50 border-b border-slate-100">
+                        <div className="flex items-center space-x-2 mb-2">
+                            <span className="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs font-bold rounded">Basis: Netzwerkarbeit</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-slate-900">Erweitertes Stakeholder-Radar</h3>
+                        <p className="text-sm text-slate-500 mt-1">Ein diverses Netzwerk ist der Schlüssel. Klicken Sie auf die Knoten.</p>
+                    </div>
+                    
+                    <div className="p-6 flex-grow flex flex-col justify-center items-center relative min-h-[300px]">
+                        {/* Info Card Overlay (if selected) */}
+                        {selectedNode && (
+                            <div className="absolute inset-x-4 top-0 z-20 bg-white/95 backdrop-blur shadow-lg rounded-lg p-4 border border-indigo-100 animate-fade-in">
+                                <div className="flex justify-between items-start mb-2">
+                                    <h4 className="font-bold text-indigo-900 text-sm">{selectedNode.label}</h4>
+                                    <button onClick={() => setSelectedNode(null)} className="text-slate-400 hover:text-slate-600">×</button>
                                 </div>
+                                
+                                <div className="space-y-1 mb-2">
+                                    {selectedNode.contacts.map((contact, idx) => (
+                                        <div key={idx} className="flex items-center text-xs text-slate-700">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 mr-2"></div>
+                                            <span className="font-semibold mr-1">{contact.name}</span>
+                                            <span className="text-slate-500 truncate">({contact.role})</span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="mt-2 text-[10px] text-slate-600 bg-indigo-50 p-2 rounded italic border border-indigo-100">
+                                    {selectedNode.goal}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="relative w-full max-w-[260px] aspect-square">
+                            {/* Central Node */}
+                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-slate-900 rounded-full flex items-center justify-center text-white font-bold z-10 shadow-xl border-4 border-white">
+                                HSK
+                            </div>
+                            
+                            {/* Interactive Nodes - Circular Layout */}
+                            {nodes.map((node, i) => {
+                                const angle = (i * (360 / nodes.length)) * (Math.PI / 180);
+                                const radius = 100; // Distance from center
+                                const x = Math.cos(angle) * radius;
+                                const y = Math.sin(angle) * radius;
+                                
+                                // Color handling for Tailwind (safe-list approach needed usually, but using inline for simplicity in demo)
+                                let bgClass = "bg-slate-100";
+                                let textClass = "text-slate-700";
+                                if(node.color === 'indigo') { bgClass = "bg-indigo-100"; textClass="text-indigo-700"; }
+                                if(node.color === 'emerald') { bgClass = "bg-emerald-100"; textClass="text-emerald-700"; }
+                                if(node.color === 'blue') { bgClass = "bg-blue-100"; textClass="text-blue-700"; }
+                                if(node.color === 'amber') { bgClass = "bg-amber-100"; textClass="text-amber-700"; }
+                                if(node.color === 'teal') { bgClass = "bg-teal-100"; textClass="text-teal-700"; }
+                                if(node.color === 'rose') { bgClass = "bg-rose-100"; textClass="text-rose-700"; }
+                                
+                                return (
+                                    <button 
+                                        key={node.id}
+                                        onClick={() => setSelectedNode(node)}
+                                        style={{ 
+                                            transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+                                            top: '50%',
+                                            left: '50%'
+                                        }}
+                                        className={`absolute flex flex-col items-center group transition-transform hover:scale-110 focus:outline-none z-0`}
+                                    >
+                                        <div className={`w-10 h-10 ${bgClass} rounded-full flex items-center justify-center ${textClass} border mb-1 shadow-sm group-hover:shadow-md transition`}>
+                                            {node.icon}
+                                        </div>
+                                        <span className="text-[9px] font-bold text-slate-600 bg-white px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap">{node.label}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <div className="p-4 bg-slate-50 text-xs text-slate-500 border-t border-slate-100">
+                        <strong>Methodik:</strong> Weg vom "Zufallskontakt". Jeder Stakeholder hat eine hinterlegte Persona und ein klares strategisches Ziel im CRM.
+                    </div>
+                </div>
+            );
+        };
+
+        // Demo 4: Impact & Legacy Reporting
+        const ImpactDemo = () => {
+            const [activeStory, setActiveStory] = useState(0);
+            const stories = [
+                { name: "Patientin (82)", station: "Gerontopsychiatrie", text: "Dank der Spenden erhielt unser Gemeinschaftsraum ein biodynamisches Lichtsystem. Es bringt Struktur in meinen Tag.", icon: "👵" },
+                { name: "Patient (19)", station: "Junge Erwachsene", text: "Die neuen Instrumente für die Musiktherapie helfen mir, Gefühle auszudrücken, für die mir die Worte fehlen.", icon: "🎸" },
+                { name: "Pflege-Team", station: "Station G", text: "Der neu gestaltete Pausenraum im Garten gibt uns Kraft für den Schichtdienst. Das Team sagt Danke!", icon: "👩‍⚕️" },
+            ];
+
+            return (
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200 flex flex-col h-full hover:border-[#8a1b3b]/30 transition duration-300">
+                     <div className="p-6 bg-slate-50 border-b border-slate-100">
+                         <div className="flex items-center space-x-2 mb-2">
+                            <span className="px-2 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded">Trend: Impact & Legacy</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-slate-900">Wirkung, die bleibt</h3>
+                        <p className="text-sm text-slate-500 mt-1">Wir zeigen den menschlichen Impact, anonymisiert und datenschutzkonform.</p>
+                    </div>
+
+                    <div className="p-6 flex-grow flex flex-col justify-center">
+                        <div className="bg-amber-50 rounded-xl p-6 relative min-h-[180px] flex flex-col justify-center items-center text-center transition-all duration-500">
+                            <div className="text-4xl mb-3 shadow-sm bg-white rounded-full w-12 h-12 flex items-center justify-center">
+                                {stories[activeStory].icon}
+                            </div>
+                            <h4 className="font-bold text-amber-900 text-lg mb-1">{stories[activeStory].name}</h4>
+                            <span className="text-xs uppercase tracking-wide text-amber-700 font-semibold mb-3">{stories[activeStory].station}</span>
+                            <p className="text-sm text-amber-800 italic relative px-2">
+                                <Quote className="w-4 h-4 absolute -top-2 -left-2 text-amber-300 transform scale-x-[-1]" />
+                                 {stories[activeStory].text}
+                            </p>
+                        </div>
+
+                        <div className="flex justify-center space-x-2 mt-4">
+                            {stories.map((_, i) => (
+                                <button 
+                                    key={i}
+                                    onClick={() => setActiveStory(i)}
+                                    className={`w-2 h-2 rounded-full transition-all ${i === activeStory ? 'bg-amber-600 w-4' : 'bg-amber-200 hover:bg-amber-400'}`}
+                                />
                             ))}
                         </div>
+                    </div>
 
-                        <div className="mt-2 text-[10px] text-slate-600 bg-indigo-50 p-2 rounded italic border border-indigo-100">
-                            {selectedNode.goal}
+                    <div className="p-4 bg-slate-50 text-xs text-slate-500 border-t border-slate-100">
+                        <strong>Methodik:</strong> Schutz der Identität hat oberste Priorität. Wir erzählen Geschichten über Rollen und Ergebnisse, nicht über Klarnamen.
+                    </div>
+                </div>
+            );
+        };
+
+        const DemoSection = () => (
+            <section id="demos" className="py-20 bg-slate-50">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center max-w-3xl mx-auto mb-16">
+                        <h2 className="text-3xl font-bold text-slate-900 mb-4">Lösungskompetenz in der Praxis</h2>
+                        <p className="text-lg text-slate-600">
+                            Eine fundierte Marktanalyse identifiziert klare Trends im Gesundheitswesen. 
+                            Hier sind vier konkrete digitale Werkzeuge und Strategien, die ich für die HSK entwickeln und implementieren würde.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <MicroDonationDemo />
+                        <CorporateDemo />
+                        <NetworkDemo />
+                        <ImpactDemo />
+                    </div>
+                </div>
+            </section>
+        );
+
+        // 4. About / Why Me
+        const About = () => (
+            <section id="about" className="py-20 bg-white">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="lg:flex lg:items-start lg:space-x-12">
+                        <div className="lg:w-1/3 mb-10 lg:mb-0">
+                            <div className="bg-slate-900 text-white p-8 rounded-xl shadow-xl border-t-4 border-[#8a1b3b]">
+                                <h3 className="text-2xl font-bold mb-4">Warum Philipp Krohn?</h3>
+                                <ul className="space-y-4">
+                                    <li className="flex items-start">
+                                        <div className="bg-blue-500 p-1 rounded mt-1 mr-3"><Users className="w-4 h-4 text-white"/></div>
+                                        <div>
+                                            <strong className="block text-blue-200">Recruiting DNA</strong>
+                                            <span className="text-sm text-slate-300">Ich weiß, wie man Zielgruppen definiert und überzeugt (Funnel-Methodik).</span>
+                                        </div>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <div className="bg-teal-500 p-1 rounded mt-1 mr-3"><Leaf className="w-4 h-4 text-white"/></div>
+                                        <div>
+                                            <strong className="block text-teal-200">Wissenstransfer</strong>
+                                            <span className="text-sm text-slate-300">Verständnis komplexer medizinischer Themen und Transfer durch alle Stakeholder-Ebenen.</span>
+                                        </div>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <div className="bg-[#8a1b3b] p-1 rounded mt-1 mr-3"><TrendingUp className="w-4 h-4 text-white"/></div>
+                                        <div>
+                                            <strong className="block text-red-200">Unternehmerisches Denken</strong>
+                                            <span className="text-sm text-slate-300">Fokus auf ROI und Effizienz. Jeder Euro muss wirken.</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div className="lg:w-2/3">
+                            <h2 className="text-3xl font-bold text-slate-900 mb-6">Der Hybrid-Manager für die HSK</h2>
+                            <div className="prose prose-lg text-slate-600">
+                                <p className="mb-6 font-medium">
+                                    Die Stelle als Mitarbeiter für Marketing & Fundraising ist keine rein operative Rolle – sie ist eine Schnittstelle. Basierend auf meiner Analyse der HSK sehe ich drei strategische Handlungsfelder, die ich sofort angehen würde:
+                                </p>
+                                
+                                <div className="space-y-6">
+                                    <div className="flex items-start">
+                                        <div className="flex-shrink-0 h-6 w-6 rounded-full bg-slate-200 flex items-center justify-center text-slate-800 font-bold text-sm mt-1">1</div>
+                                        <div className="ml-4">
+                                            <h4 className="text-lg font-bold text-slate-800">Integrated Value Communication</h4>
+                                            <p className="text-sm">
+                                                Fundraising ist kein "One-Size-Fits-All". Ein Großspender für den Neubau benötigt eine exklusive Beziehungspflege (High Touch), während der "Micro-Spender" für den Garten schnelle, digitale Touchpoints sucht (Low Touch). Ich integriere diese Ansätze in einer Gesamtstrategie, die jeden Spender dort abholt, wo er steht.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-start">
+                                        <div className="flex-shrink-0 h-6 w-6 rounded-full bg-slate-200 flex items-center justify-center text-slate-800 font-bold text-sm mt-1">2</div>
+                                        <div className="ml-4">
+                                            <h4 className="text-lg font-bold text-slate-800">Data-Driven Donor Journey</h4>
+                                            <p className="text-sm">
+                                                Weg vom Gießkannen-Prinzip. Durch Digitalisierung des Fundraisings schaffen wir messbare Spender-Beziehungen und machen Erfolg planbar – genau wie im Performance Marketing.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-start">
+                                        <div className="flex-shrink-0 h-6 w-6 rounded-full bg-slate-200 flex items-center justify-center text-slate-800 font-bold text-sm mt-1">3</div>
+                                        <div className="ml-4">
+                                            <h4 className="text-lg font-bold text-slate-800">Community & Stigma Management</h4>
+                                            <p className="text-sm">
+                                                Lokale Verankerung ist der Schlüssel. Wir müssen "Berührungsängste" abbauen, indem wir die Klinik in der Wahrnehmung der Stakeholder öffnen. Ich positioniere die HSK nicht als "Klinik am Rand", sondern als aktiven Teil der Gemeinschaft in Stormarn.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-8 border-l-4 border-[#8a1b3b] pl-4 italic text-slate-800">
+                                    "Mein Ziel: Die HSK nicht nur als Ort der Heilung, sondern als Leuchtturm für gesellschaftliches Engagement in Stormarn zu etablieren."
+                                </div>
+                            </div>
                         </div>
                     </div>
-                )}
+                </div>
+            </section>
+        );
 
-                <div className="relative w-full max-w-[260px] aspect-square">
-                    {/* Central Node */}
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-slate-900 rounded-full flex items-center justify-center text-white font-bold z-10 shadow-xl border-4 border-white">
-                        HSK
+        // 5. Footer
+        const Footer = () => (
+            <footer className="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+                    <div className="mb-6 md:mb-0 order-2 md:order-1">
+                        <span className="text-white font-bold text-lg">Philipp Krohn</span>
+                        <div className="text-sm mt-2 space-y-1">
+                            <p>Telefon: 0151 463 27 466</p>
+                            <p>Email: <a href="mailto:Philipp.Krohn@gmail.com" className="hover:text-white transition">Philipp.Krohn@gmail.com</a></p>
+                        </div>
                     </div>
                     
-                    {/* Interactive Nodes - Circular Layout */}
-                    {nodes.map((node, i) => {
-                        const angle = (i * (360 / nodes.length)) * (Math.PI / 180);
-                        const radius = 100; // Distance from center
-                        const x = Math.cos(angle) * radius;
-                        const y = Math.sin(angle) * radius;
-                        
-                        return (
-                            <button 
-                                key={node.id}
-                                onClick={() => setSelectedNode(node)}
-                                style={{ 
-                                    transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-                                    top: '50%',
-                                    left: '50%'
-                                }}
-                                className={`absolute flex flex-col items-center group transition-transform hover:scale-110 focus:outline-none z-0`}
-                            >
-                                <div className={`w-10 h-10 bg-${node.color}-100 rounded-full flex items-center justify-center text-${node.color}-700 border border-${node.color}-200 mb-1 shadow-sm group-hover:shadow-md group-hover:bg-${node.color}-200 transition`}>
-                                    {node.icon}
-                                </div>
-                                <span className="text-[9px] font-bold text-slate-600 bg-white px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap">{node.label}</span>
-                            </button>
-                        );
-                    })}
-                </div>
-            </div>
-
-            <div className="p-4 bg-slate-50 text-xs text-slate-500 border-t border-slate-100">
-                <strong>Methodik:</strong> Weg vom "Zufallskontakt". Jeder Stakeholder hat eine hinterlegte Persona und ein klares strategisches Ziel im CRM. Systematische Pflege aller Schlüsselgruppen durch maßgeschneiderte Kommunikation.
-            </div>
-        </div>
-    );
-};
-
-// Demo 4: Impact & Legacy Reporting
-const ImpactDemo = () => {
-    const [activeStory, setActiveStory] = useState(0);
-    const stories = [
-        { name: "Patientin (82)", station: "Gerontopsychiatrie", text: "Dank der Spenden erhielt unser Gemeinschaftsraum ein biodynamisches Lichtsystem. Es bringt Struktur in meinen Tag.", icon: "👵" },
-        { name: "Patient (19)", station: "Junge Erwachsene", text: "Die neuen Instrumente für die Musiktherapie helfen mir, Gefühle auszudrücken, für die mir die Worte fehlen.", icon: "🎸" },
-        { name: "Pflege-Team", station: "Station G", text: "Der neu gestaltete Pausenraum im Garten gibt uns Kraft für den Schichtdienst. Das Team sagt Danke!", icon: "👩‍⚕️" },
-    ];
-
-    return (
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200 flex flex-col h-full hover:border-[#8a1b3b]/30 transition duration-300">
-             <div className="p-6 bg-slate-50 border-b border-slate-100">
-                 <div className="flex items-center space-x-2 mb-2">
-                    <span className="px-2 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded">Trend: Impact & Legacy</span>
-                </div>
-                <h3 className="text-xl font-bold text-slate-900">Wirkung, die bleibt</h3>
-                <p className="text-sm text-slate-500 mt-1">Wir zeigen den menschlichen Impact, anonymisiert und datenschutzkonform.</p>
-            </div>
-
-            <div className="p-6 flex-grow flex flex-col justify-center">
-                {/* Story Card Slider */}
-                <div className="bg-amber-50 rounded-xl p-6 relative min-h-[180px] flex flex-col justify-center items-center text-center transition-all duration-500">
-                    <div className="text-4xl mb-3 shadow-sm bg-white rounded-full w-12 h-12 flex items-center justify-center">
-                        {stories[activeStory].icon}
-                    </div>
-                    <h4 className="font-bold text-amber-900 text-lg mb-1">{stories[activeStory].name}</h4>
-                    <span className="text-xs uppercase tracking-wide text-amber-700 font-semibold mb-3">{stories[activeStory].station}</span>
-                    <p className="text-sm text-amber-800 italic relative px-2">
-                        <Quote className="w-4 h-4 absolute -top-2 -left-2 text-amber-300 transform scale-x-[-1]" />
-                         {stories[activeStory].text}
-                    </p>
-                </div>
-
-                {/* Navigation Dots */}
-                <div className="flex justify-center space-x-2 mt-4">
-                    {stories.map((_, i) => (
-                        <button 
-                            key={i}
-                            onClick={() => setActiveStory(i)}
-                            className={`w-2 h-2 rounded-full transition-all ${i === activeStory ? 'bg-amber-600 w-4' : 'bg-amber-200 hover:bg-amber-400'}`}
+                    {/* Center Image - Placeholder wenn Datei fehlt */}
+                    <div className="mb-6 md:mb-0 order-1 md:order-2">
+                        <img 
+                            src="PK Bild Klein.jpg" 
+                            alt="Philipp Krohn" 
+                            className="w-24 h-24 rounded-full border-4 border-slate-800 shadow-xl object-cover mx-auto bg-slate-700"
+                            onError={(e) => {
+                                e.target.style.display = 'none'; // Versteckt Bild wenn nicht gefunden
+                                e.target.parentNode.innerHTML += '<div class="w-24 h-24 rounded-full border-4 border-slate-800 shadow-xl bg-slate-700 flex items-center justify-center text-white font-bold text-xl">PK</div>';
+                            }}
                         />
-                    ))}
-                </div>
-            </div>
+                    </div>
 
-            <div className="p-4 bg-slate-50 text-xs text-slate-500 border-t border-slate-100">
-                <strong>Methodik:</strong> Schutz der Identität hat oberste Priorität. Wir erzählen Geschichten über Rollen und Ergebnisse, nicht über Klarnamen.
-            </div>
-        </div>
-    );
-};
-
-const DemoSection = () => (
-    <section id="demos" className="py-20 bg-slate-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-16">
-                <h2 className="text-3xl font-bold text-slate-900 mb-4">Lösungskompetenz in der Praxis</h2>
-                <p className="text-lg text-slate-600">
-                    Eine fundierte Marktanalyse identifiziert klare Trends im Gesundheitswesen.
-                    Hier sind vier konkrete digitale Werkzeuge und Strategien, die ich für die HSK entwickeln und implementieren würde.
-                </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <MicroDonationDemo />
-                <CorporateDemo />
-                <NetworkDemo />
-                <ImpactDemo />
-            </div>
-        </div>
-    </section>
-);
-
-// 4. About / Why Me
-const About = () => (
-    <section id="about" className="py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="lg:flex lg:items-start lg:space-x-12">
-                <div className="lg:w-1/3 mb-10 lg:mb-0">
-                    <div className="bg-slate-900 text-white p-8 rounded-xl shadow-xl border-t-4 border-[#8a1b3b]">
-                        <h3 className="text-2xl font-bold mb-4">Warum Philipp Krohn?</h3>
-                        <ul className="space-y-4">
-                            <li className="flex items-start">
-                                <div className="bg-blue-500 p-1 rounded mt-1 mr-3"><Users className="w-4 h-4 text-white"/></div>
-                                <div>
-                                    <strong className="block text-blue-200">Recruiting DNA</strong>
-                                    <span className="text-sm text-slate-300">Ich weiß, wie man Zielgruppen definiert und überzeugt (Funnel-Methodik).</span>
-                                </div>
-                            </li>
-                            <li className="flex items-start">
-                                <div className="bg-teal-500 p-1 rounded mt-1 mr-3"><Leaf className="w-4 h-4 text-white"/></div>
-                                <div>
-                                    <strong className="block text-teal-200">Wissenstransfer</strong>
-                                    <span className="text-sm text-slate-300">Verständnis komplexer medizinischer Themen und Transfer durch alle Stakeholder-Ebenen.</span>
-                                </div>
-                            </li>
-                            <li className="flex items-start">
-                                <div className="bg-[#8a1b3b] p-1 rounded mt-1 mr-3"><TrendingUp className="w-4 h-4 text-white"/></div>
-                                <div>
-                                    <strong className="block text-red-200">Unternehmerisches Denken</strong>
-                                    <span className="text-sm text-slate-300">Fokus auf ROI und Effizienz. Jeder Euro muss wirken.</span>
-                                </div>
-                            </li>
-                        </ul>
+                    <div className="mt-4 md:mt-0 text-xs text-slate-500 order-3">
+                        Erstellt für Heinrich Sengelmann Kliniken.
                     </div>
                 </div>
-                <div className="lg:w-2/3">
-                    <h2 className="text-3xl font-bold text-slate-900 mb-6">Der Hybrid-Manager für die HSK</h2>
-                    <div className="prose prose-lg text-slate-600">
-                        <p className="mb-6 font-medium">
-                            Die Stelle als Mitarbeiter für Marketing & Fundraising ist keine rein operative Rolle – sie ist eine Schnittstelle. Basierend auf meiner Analyse der HSK sehe ich drei strategische Handlungsfelder, die ich sofort angehen würde:
-                        </p>
-                        
-                        <div className="space-y-6">
-                            <div className="flex items-start">
-                                <div className="flex-shrink-0 h-6 w-6 rounded-full bg-slate-200 flex items-center justify-center text-slate-800 font-bold text-sm mt-1">1</div>
-                                <div className="ml-4">
-                                    <h4 className="text-lg font-bold text-slate-800">Integrated Value Communication</h4>
-                                    <p className="text-sm">
-                                        Fundraising ist kein "One-Size-Fits-All". Ein Großspender für den Neubau benötigt eine exklusive Beziehungspflege (High Touch), während der "Micro-Spender" für den Garten schnelle, digitale Touchpoints sucht (Low Touch). Ich integriere diese Ansätze in einer Gesamtstrategie, die jeden Spender dort abholt, wo er steht.
-                                    </p>
-                                </div>
-                            </div>
+            </footer>
+        );
 
-                            <div className="flex items-start">
-                                <div className="flex-shrink-0 h-6 w-6 rounded-full bg-slate-200 flex items-center justify-center text-slate-800 font-bold text-sm mt-1">2</div>
-                                <div className="ml-4">
-                                    <h4 className="text-lg font-bold text-slate-800">Data-Driven Donor Journey</h4>
-                                    <p className="text-sm">
-                                        Weg vom Gießkannen-Prinzip. Durch Digitalisierung des Fundraisings schaffen wir messbare Spender-Beziehungen und machen Erfolg planbar – genau wie im Performance Marketing.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-start">
-                                <div className="flex-shrink-0 h-6 w-6 rounded-full bg-slate-200 flex items-center justify-center text-slate-800 font-bold text-sm mt-1">3</div>
-                                <div className="ml-4">
-                                    <h4 className="text-lg font-bold text-slate-800">Community & Stigma Management</h4>
-                                    <p className="text-sm">
-                                        Lokale Verankerung ist der Schlüssel. Wir müssen "Berührungsängste" abbauen, indem wir die Klinik in der Wahrnehmung der Stakeholder öffnen. Ich positioniere die HSK nicht als "Klinik am Rand", sondern als aktiven Teil der Gemeinschaft in Stormarn.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="mt-8 border-l-4 border-[#8a1b3b] pl-4 italic text-slate-800">
-                            "Mein Ziel: Die HSK nicht nur als Ort der Heilung, sondern als Leuchtturm für gesellschaftliches Engagement in Stormarn zu etablieren."
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-);
-
-// 5. Footer
-const Footer = () => (
-    <footer className="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-center md:text-left">
-            <div className="mb-6 md:mb-0 order-2 md:order-1">
-                <span className="text-white font-bold text-lg">Philipp Krohn</span>
-                <div className="text-sm mt-2 space-y-1">
-                    <p>Telefon: 0151 463 27 466</p>
-                    <p>Email: <a href="mailto:Philipp.Krohn@gmail.com" className="hover:text-white transition">Philipp.Krohn@gmail.com</a></p>
-                </div>
-            </div>
-            
-            {/* Center Image */}
-            <div className="mb-6 md:mb-0 order-1 md:order-2">
-                <img 
-                    src="PK Bild Klein.jpg" 
-                    alt="Philipp Krohn" 
-                    className="w-24 h-24 rounded-full border-4 border-slate-800 shadow-xl object-cover mx-auto"
-                />
-            </div>
-
-            <div className="mt-4 md:mt-0 text-xs text-slate-500 order-3">
-                Erstellt für Heinrich Sengelmann Kliniken.
-            </div>
-        </div>
-    </footer>
-);
-
-export default App;
+        // Rendering
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
